@@ -29,4 +29,4 @@ ctest --test-dir out/linux --output-on-failure
 python3 tests/benchmark.py out/linux/fastboot-proxy
 ```
 
-교차 빌드 배포 ZIP은 Zig 0.14.1의 Clang/MinGW와 CMake 3.31에서 빌드한 PE x86-64입니다. MSVC 실행 파일은 CI 또는 로컬 PowerShell 빌드로 별도 생성할 수 있습니다. [Windows SDK 요구 사항](https://learn.microsoft.com/en-us/windows/win32/api/winusb/nf-winusb-winusb_initialize) · [Google Platform Tools](https://developer.android.com/tools/releases/platform-tools)
+Windows CI 배포 ZIP은 Visual Studio 2022에서 빌드한 x64 Release EXE를 담습니다. Zig 0.14.1의 Clang/MinGW와 CMake 3.31을 사용한 PE x86-64 교차 빌드도 별도로 확인했습니다. [Windows SDK 요구 사항](https://learn.microsoft.com/en-us/windows/win32/api/winusb/nf-winusb-winusb_initialize) · [Google Platform Tools](https://developer.android.com/tools/releases/platform-tools)
