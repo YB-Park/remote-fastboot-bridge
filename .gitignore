@@ -1,0 +1,5 @@
+/out/
+/build/
+/dist/
+*.log
+__pycache__/

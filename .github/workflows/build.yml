@@ -1,0 +1,56 @@
+name: Windows x64 build
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: windows-2022
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [Debug, Release]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download official Platform Tools
+        shell: pwsh
+        run: |
+          $zip = Join-Path $env:RUNNER_TEMP 'platform-tools.zip'
+          $dir = Join-Path $env:RUNNER_TEMP 'platform-tools-sdk'
+          Invoke-WebRequest -Uri 'https://dl.google.com/android/repository/platform-tools_r37.0.3-win.zip' -OutFile $zip
+          $expected = '89D108360A3BF2924D3BEA837239EDACCC22FD6FF5BEFD3787C4348A9FE4F09D'
+          if ((Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash -ne $expected) {
+              throw 'Platform Tools SHA-256 mismatch.'
+          }
+          Expand-Archive -LiteralPath $zip -DestinationPath $dir
+          $fastboot = Join-Path $dir 'platform-tools/fastboot.exe'
+          & $fastboot --version
+          if ($LASTEXITCODE -ne 0) { throw 'fastboot.exe failed to start.' }
+          "FASTBOOT_CLIENT=$fastboot" >> $env:GITHUB_ENV
+      - name: Compile and test
+        shell: pwsh
+        run: ./scripts/test.ps1 -Configuration ${{ matrix.configuration }} -FastbootClient $env:FASTBOOT_CLIENT
+
+  package:
+    needs: test
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and package production EXE
+        shell: pwsh
+        run: ./scripts/package.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fastboot-proxy-win-x64
+          path: dist/fastboot-proxy-win-x64.zip
+          if-no-files-found: error

@@ -1,0 +1,16 @@
+{
+  "listen_address": "127.0.0.1",
+  "usb_backend": "auto",
+  "allowlist": ["127.0.0.1/32"],
+  "reconnect_timeout_ms": 60000,
+  "session_timeout_ms": 60000,
+  "usb_timeout_ms": 90000,
+  "io_timeout_ms": 30000,
+  "max_sessions": 8,
+  "log_level": "INFO",
+  "log_file": "fastboot-proxy.log",
+  "devices": [
+    { "serial": "SERIAL_A", "port": 5554 },
+    { "serial": "SERIAL_B", "port": 5555 }
+  ]
+}
